@@ -1,3 +1,5 @@
+AWSQuickSetup-InstallAndManageCloudWatchDocument
+
 {
   "schemaVersion": "2.2",
   "description": "The AWS-InstallAndManageCloudWatch command document installs the Amazon CloudWatch agent and manages the configuration of the agent for Amazon EC2 instances.",
