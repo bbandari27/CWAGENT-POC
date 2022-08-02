@@ -4,9 +4,6 @@
 
 resource "aws_iam_role" "cwa_role" {
  name   = "cwa_role"
- tags = merge(
-  local.standard_tags
- )
  assume_role_policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -23,49 +20,25 @@ resource "aws_iam_role" "cwa_role" {
 EOF
 }
 
-# IAM policy for cwa 
-
-resource "aws_iam_policy" "cwa_policy" {
-
-  name         = "cwa_policy"
-  path         = "/"
-  description  = "IAM policy for cwa"
-  tags = merge(
-    local.standard_tags
-  )
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PermissionsNeededFor",
-            "Effect": "Allow",
-            "Action": [
-                "cloudwatch:*",
-                "s3:*",
-                "sns:*",
-                "organizations:*",
-                "ssm:*"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-EOF
-}
-
-# cwa_policy Attachment on the cwa_role.
-
-resource "aws_iam_role_policy_attachment" "cwa_policy_attach" {
-  role        = aws_iam_role.cwa_role.name
-  policy_arn  = aws_iam_policy.cwa_policy.arn
-}
-
 # SSM_managed_policy Attachment on the cwa_role.
 
 resource "aws_iam_role_policy_attachment" "ssm_policy_attach" {
   role        = aws_iam_role.cwa_role.name
   policy_arn  = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+# cwa_service_managed_policy Attachment on the cwa_role.
+
+resource "aws_iam_role_policy_attachment" "cwa_service_policy_attach" {
+  role        = aws_iam_role.cwa_role.name
+  policy_arn  = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+# cwa_admin_managed_policy Attachment on the cwa_role.
+
+resource "aws_iam_role_policy_attachment" "cwa_admin_policy_attach" {
+  role        = aws_iam_role.cwa_role.name
+  policy_arn  = "arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy"
 }
 
 # instance_profile for the CWA server EC2 Instance
@@ -95,9 +68,6 @@ resource "aws_security_group" "cwa_sg" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-  tags = merge(
-    local.standard_tags
-  )
 }
 
 # EC2 instance for CWA server
@@ -105,12 +75,6 @@ resource "aws_security_group" "cwa_sg" {
 resource "aws_instance" "cwa" {
   ami           = "ami-0b0af3577fe5e3532" # us-east-1
   instance_type = "c5.2xlarge"
-  tags = merge(
-    local.standard_tags,
-    {
-      Name = "cwa"
-    }
-  )
   root_block_device {
     delete_on_termination = true
     encrypted             = true
