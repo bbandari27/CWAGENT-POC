@@ -20,10 +20,11 @@
           "mode": "ec2",
           "optionalRestart": "yes",
           "optionalConfigurationSource": "default",
+          "optionalConfigurationLocation": "/cloudwatch-agent/config",
           "action": "configure"
         },
         "documentType": "SSMDocument",
-        "documentPath": "AmazonCloudWatch-manageCWAgent"
+        "documentPath": "AmazonCloudWatch-ManageAgent"
       },
       "name": "manageCWAgent",
       "action": "aws:runDocument"
