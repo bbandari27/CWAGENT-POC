@@ -8,10 +8,9 @@ resource "aws_ssm_document" "InstallandmanageCWAgent" {
     })
 }
 
-resource "aws_ssm_association" "ConfigureAndManageCloudWatchAgentAssociation" {
-  name = "InstallandmanageCWAgent"
-  targets {
-    key    = "tag:CWAgent"
-    values = ["Configure"]
-  }
+resource "aws_ssm_parameter" "cw_agent" {
+  description = "Cloudwatch agent config to custom configure"
+  name        = "/cloudwatch-agent/config"
+  type        = "String"
+  value       = file("cw_agent_config.json")
 }
